@@ -7,12 +7,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class FciAnalyzerTest {
     @Test
     void test(){
-        String data = "6f288407a0000000031010a51d500a564953414352454449548701019f38039f1a02bf0c059f4d020f0a9000";
+        String data = "6f288407a0000000031010a51d500a564953414352454449548701019f38039f1a02bf0c059f4d020f0a";
         byte[] arr= BinaryData.from(data).toByteArray();
         FciAnalyzer analyzer = new FciAnalyzer();
         Fci fci = analyzer.analyze(arr);
         assertEquals("a0000000031010",fci.dfName());
         assertEquals("VISACREDIT",fci.apLabel());
+        fci.pdol();
     }
     @Test
     void lab(){

@@ -1,6 +1,7 @@
 package com.example.creditcardreader.datasource;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public final class BinaryData {
     public static final BinaryData EMPTY = new BinaryData(new byte[]{});
@@ -76,5 +77,18 @@ public final class BinaryData {
         } else {
             throw new NumberFormatException("Value out of range. Value:\"" + s + "\" Radix:" + radix);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BinaryData that = (BinaryData) o;
+        return Arrays.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(value);
     }
 }
