@@ -10,7 +10,7 @@ import java.util.Map;
  * クレジットカードからPCSC経由でデータを読みとる
  */
 public class CreditCardInfoPcscReader {
-    public void readCard() {
+    public RecordDto readCard() {
         try {
             TerminalFactory tf = TerminalFactory.getDefault();
             CardTerminals ct = tf.terminals();
@@ -28,15 +28,51 @@ public class CreditCardInfoPcscReader {
             Fci fci = selectAid(cardTransfer);
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
-            readRecord(cardTransfer, afl);
+            return readRecord(cardTransfer, afl);
 
+        } catch (CardException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void verifyPin(String pin){
+        try {
+            TerminalFactory tf = TerminalFactory.getDefault();
+            CardTerminals ct = tf.terminals();
+            System.out.println(ct.list().toString());
+
+            CardTerminal terminal = ct.list().get(0);
+
+            Card card = null;
+
+            card = terminal.connect("*");
+            System.out.println(card.toString());
+            CardChannel channel = card.getBasicChannel();
+            CardTransfer cardTransfer = new CardTransfer(card);
+            ATR atr = card.getATR();
+            Fci fci = selectAid(cardTransfer);
+            Tl[] pdol = fci.pdol();
+            Afl[] afl = processingOption(cardTransfer, pdol);
+            //verify command
+            if(pin.length() != 4){
+                return;
+            }
+            for (char c : pin.toCharArray()){
+                if(!Character.isDigit(c)){
+                    return;
+                }
+            }
+            String verify = "002000800824" + pin +"FFFFFFFFFF";
+            BinaryData command = BinaryData.from(verify);
+            ResponseAPDU answer = cardTransfer.rawCommand(new CommandAPDU(command.toByteArray()));
         } catch (CardException e) {
             e.printStackTrace();
             return;
         }
     }
 
-    private void readRecord(CardTransfer cardTransfer, Afl[] afl) throws CardException {
+    private RecordDto readRecord(CardTransfer cardTransfer, Afl[] afl) throws CardException {
         List<Tlv> list = new LinkedList<>();
         for (int i = 0; i < afl.length; i++) {
             int fi = afl[i].getFileIngicate();
@@ -55,12 +91,25 @@ public class CreditCardInfoPcscReader {
                 }
             }
         }
+        RecordDto dto = new RecordDto();
 
+        BinaryData panTag = BinaryData.from("5A");
+        BinaryData nameTag = BinaryData.from("5F20");
+        BinaryData expDateTag = BinaryData.from("5F24");
         for(Tlv tlv : list){
-            System.out.println("RR[tag]" + BinaryData.of(tlv.getTag()).toString());
-            System.out.println("RR[value]" + BinaryData.of(tlv.getValue()).toString());
+            BinaryData tag = BinaryData.of(tlv.getTag());
+            BinaryData value = BinaryData.of(tlv.getValue());
+            if(panTag.equals(tag)){
+                dto.setPan(value);
+            }else if(nameTag.equals(tag)){
+                dto.setCardholderName(value);
+            }else if(expDateTag.equals(tag)){
+                dto.setExpirationDate(value);
+            }
+            System.out.println("RR[tag]" + tag.toString());
+            System.out.println("RR[value]" + value.toString());
         }
-
+        return dto;
     }
 
     private Afl[] processingOption(CardTransfer transfer, Tl[] pdol) throws CardException {
