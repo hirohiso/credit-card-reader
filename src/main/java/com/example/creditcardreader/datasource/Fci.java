@@ -2,21 +2,19 @@ package com.example.creditcardreader.datasource;
 
 public class Fci {
     //DFNAME
-    private byte[] dfName;
+    byte[] dfName;
     //Application Label
-    private byte[] appLabel;
+    byte[] appLabel;
     //Application Priority Indicator
-    private byte[] api;
+    byte[] api;
     //PDOL
-    private byte[] pdol;
-    //Language Preference
-    private byte[] languagePrefer;
-    //Issuer Code Table Index
-    private byte[] issureCode;
-    //Application Preferred Name
-    private byte[] apppreferName;
+    byte[] pdol;
+
 
     public String dfName(){
-        return "";
+        return BinaryData.of(dfName).toString();
+    }
+    public String apLabel(){
+        return new String(appLabel);
     }
 }

@@ -12,6 +12,7 @@ class FciAnalyzerTest {
         FciAnalyzer analyzer = new FciAnalyzer();
         Fci fci = analyzer.analyze(arr);
         assertEquals("a0000000031010",fci.dfName());
+        assertEquals("VISACREDIT",fci.apLabel());
     }
     @Test
     void lab(){

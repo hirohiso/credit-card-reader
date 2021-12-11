@@ -12,9 +12,8 @@ public class Tlv {
 
     public static Tlv from(byte[] data) {
         int tagEnd = 0;
-        int mask = 0x3F;
-        System.out.println(data[tagEnd] & mask);
-        while ((data[tagEnd] & mask) == 0x1F) {
+        int mask = 0x1F;
+        while ((data[tagEnd] & mask) == mask) {
             tagEnd++;
             mask = 0x80;
         }
@@ -68,6 +67,8 @@ public class Tlv {
         while (data != null && data.length != 0){
             Tlv tlv = Tlv.from(data);
             list.add(tlv);
+            System.out.println("tag:"+ BinaryData.of(tlv.getTag()).toString());
+            System.out.println("value:"+ BinaryData.of(tlv.getValue()).toString());
             data = Arrays.copyOfRange(data,tlv.length(),data.length);
         }
         return list.toArray(new Tlv[list.size()]);
