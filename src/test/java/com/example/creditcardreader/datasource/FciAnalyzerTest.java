@@ -17,7 +17,8 @@ class FciAnalyzerTest {
     }
     @Test
     void lab(){
-        System.out.println(0xFF);
+
+        System.out.println(String.format("%02x", 0xF0| 0x04));
         System.out.println((byte)0xFF);
         System.out.println(Byte.toUnsignedInt((byte)-17));
         System.out.println((byte)0x6f);

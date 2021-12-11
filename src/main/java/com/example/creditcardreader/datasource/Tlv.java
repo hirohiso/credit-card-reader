@@ -35,11 +35,16 @@ public class Tlv {
     }
 
     private static int calLength(byte[] length) {
-        if ((length[0] & 0x80) != 0) {
+        if ((length[0] & 0x80) == 0x80) {
             int range = (length[0] & 0x7F);
-            throw new UnsupportedOperationException("128byte以上のlengthに未対応");
+            int result = 0;
+            for (int i = 0; i < range; i++) {
+                result *= 256;
+                result += Byte.toUnsignedInt(length[i + 1]);
+            }
+            return result;
         } else {
-            return length[0];
+            return Byte.toUnsignedInt(length[0]);
         }
     }
 
@@ -64,12 +69,10 @@ public class Tlv {
     public Tlv[] getInnerTlv() {
         List<Tlv> list = new LinkedList<>();
         byte[] data = this.value.clone();
-        while (data != null && data.length != 0){
+        while (data != null && data.length != 0) {
             Tlv tlv = Tlv.from(data);
             list.add(tlv);
-            System.out.println("tag:"+ BinaryData.of(tlv.getTag()).toString());
-            System.out.println("value:"+ BinaryData.of(tlv.getValue()).toString());
-            data = Arrays.copyOfRange(data,tlv.length(),data.length);
+            data = Arrays.copyOfRange(data, tlv.length(), data.length);
         }
         return list.toArray(new Tlv[list.size()]);
     }
