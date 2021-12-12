@@ -72,7 +72,7 @@ public final class BinaryData {
     }
     public static byte parseByte(String s, int radix) throws NumberFormatException {
         int i = Integer.parseInt(s, radix);
-        if (i >= 0 && i <= 256) {
+        if (i >= 0 && i < 256) {
             return (byte)i;
         } else {
             throw new NumberFormatException("Value out of range. Value:\"" + s + "\" Radix:" + radix);
