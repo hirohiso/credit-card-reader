@@ -48,7 +48,7 @@
                <Label prefHeight="31.0" prefWidth="91.0" text="暗唱番号の検証" />
                <PasswordField fx:id="pinText" promptText="****" />
                <Button onAction="#onVerifyPin" mnemonicParsing="false" prefHeight="27.0" prefWidth="76.0" text="検証" />
-               <TextArea prefHeight="70.0" prefWidth="370.0" />
+               <TextArea fx:id="pinResultMsgText" prefHeight="70.0" prefWidth="370.0" />
             </children>
          </VBox>
       </children>

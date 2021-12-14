@@ -2,11 +2,13 @@ package com.example.creditcardreader;
 
 import com.example.creditcardreader.service.ReadRecordResult;
 import com.example.creditcardreader.service.ReadRecordService;
+import com.example.creditcardreader.service.VerifyPinResult;
 import com.example.creditcardreader.service.VerifyPinService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class HelloController {
@@ -21,6 +23,8 @@ public class HelloController {
     private TextField nameText;
     @FXML
     private PasswordField pinText;
+    @FXML
+    private TextArea pinResultMsgText;
 
     @FXML
     protected void onReadRecordButtonClick() {
@@ -37,6 +41,15 @@ public class HelloController {
         String str = this.pinText.getText();
         System.out.println(str);
         VerifyPinService service = new VerifyPinService();
-        service.verifyPin(str);
+        VerifyPinResult result = service.verifyPin(str);
+        if(result.isSuccess()){
+            this.pinResultMsgText.setText("暗証を確認しました");
+        }else{
+            String msg = "暗証が誤っています";
+            if (result.getRetryCount() > 0){
+                msg = msg + String.format(" (残り %d回)",result.getRetryCount());
+            }
+            this.pinResultMsgText.setText(msg);
+        }
     }
 }

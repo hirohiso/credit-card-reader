@@ -15,7 +15,7 @@ public final class BinaryData {
         if(bytes == null){
             return EMPTY;
         }
-        return new BinaryData(bytes);
+        return new BinaryData(bytes.clone());
     }
 
     public static BinaryData of(int... ints) {

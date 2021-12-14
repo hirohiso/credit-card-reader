@@ -1,5 +1,7 @@
 package com.example.creditcardreader.datasource;
 
+import com.example.creditcardreader.service.VerifyPinResult;
+
 import javax.smartcardio.*;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,7 +38,7 @@ public class CreditCardInfoPcscReader {
         }
     }
 
-    public void verifyPin(String pin){
+    public VerifyPinResult verifyPin(String pin) {
         try {
             TerminalFactory tf = TerminalFactory.getDefault();
             CardTerminals ct = tf.terminals();
@@ -55,20 +57,43 @@ public class CreditCardInfoPcscReader {
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
             //verify command
-            if(pin.length() != 4){
-                return;
+            if (pin.length() != 4) {
+                VerifyPinResult result = new VerifyPinResult();
+                result.setSuccess(false);
+                return result;
             }
-            for (char c : pin.toCharArray()){
-                if(!Character.isDigit(c)){
-                    return;
+            for (char c : pin.toCharArray()) {
+                if (!Character.isDigit(c)) {
+                    VerifyPinResult result = new VerifyPinResult();
+                    result.setSuccess(false);
+                    return result;
                 }
             }
-            String verify = "002000800824" + pin +"FFFFFFFFFF";
+            String verify = "002000800824" + pin + "FFFFFFFFFF";
             BinaryData command = BinaryData.from(verify);
             ResponseAPDU answer = cardTransfer.rawCommand(new CommandAPDU(command.toByteArray()));
+            BinaryData data = BinaryData.of(answer.getBytes());
+
+            if (data.equals(BinaryData.from("9000"))) {
+                VerifyPinResult result = new VerifyPinResult();
+                result.setSuccess(true);
+                return result;
+            } else {
+                String str = data.toString();
+                VerifyPinResult result = new VerifyPinResult();
+                result.setSuccess(false);
+                if(str.startsWith("63c")){
+                    int counter = Integer.parseInt(str.substring(3));
+                    result.setRetryCount(counter);
+                }
+                return result;
+            }
+
         } catch (CardException e) {
             e.printStackTrace();
-            return;
+            VerifyPinResult result = new VerifyPinResult();
+            result.setSuccess(false);
+            return result;
         }
     }
 
@@ -96,14 +121,14 @@ public class CreditCardInfoPcscReader {
         BinaryData panTag = BinaryData.from("5A");
         BinaryData nameTag = BinaryData.from("5F20");
         BinaryData expDateTag = BinaryData.from("5F24");
-        for(Tlv tlv : list){
+        for (Tlv tlv : list) {
             BinaryData tag = BinaryData.of(tlv.getTag());
             BinaryData value = BinaryData.of(tlv.getValue());
-            if(panTag.equals(tag)){
+            if (panTag.equals(tag)) {
                 dto.setPan(value);
-            }else if(nameTag.equals(tag)){
+            } else if (nameTag.equals(tag)) {
                 dto.setCardholderName(value);
-            }else if(expDateTag.equals(tag)){
+            } else if (expDateTag.equals(tag)) {
                 dto.setExpirationDate(value);
             }
             System.out.println("RR[tag]" + tag.toString());

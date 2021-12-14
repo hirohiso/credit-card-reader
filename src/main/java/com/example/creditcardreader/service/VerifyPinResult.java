@@ -1,8 +1,8 @@
 package com.example.creditcardreader.service;
 
 public class VerifyPinResult {
-    private boolean success;
-    private int retryCount;
+    private boolean success = true;
+    private int retryCount = -1;
 
     public boolean isSuccess() {
         return success;
