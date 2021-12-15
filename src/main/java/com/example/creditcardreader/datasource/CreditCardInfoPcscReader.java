@@ -14,19 +14,7 @@ import java.util.Map;
 public class CreditCardInfoPcscReader {
     public RecordDto readCard() {
         try {
-            TerminalFactory tf = TerminalFactory.getDefault();
-            CardTerminals ct = tf.terminals();
-            System.out.println(ct.list().toString());
-
-            CardTerminal terminal = ct.list().get(0);
-
-            Card card = null;
-
-            card = terminal.connect("*");
-            System.out.println(card.toString());
-            CardChannel channel = card.getBasicChannel();
-            CardTransfer cardTransfer = new CardTransfer(card);
-            ATR atr = card.getATR();
+            CardTransfer cardTransfer = CardTransfer.getInstance();
             Fci fci = selectAid(cardTransfer);
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
@@ -40,61 +28,48 @@ public class CreditCardInfoPcscReader {
 
     public VerifyPinResult verifyPin(String pin) {
         try {
-            TerminalFactory tf = TerminalFactory.getDefault();
-            CardTerminals ct = tf.terminals();
-            System.out.println(ct.list().toString());
+            CardTransfer cardTransfer = CardTransfer.getInstance();
 
-            CardTerminal terminal = ct.list().get(0);
-
-            Card card = null;
-
-            card = terminal.connect("*");
-            System.out.println(card.toString());
-            CardChannel channel = card.getBasicChannel();
-            CardTransfer cardTransfer = new CardTransfer(card);
-            ATR atr = card.getATR();
             Fci fci = selectAid(cardTransfer);
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
             //verify command
-            if (pin.length() != 4) {
-                VerifyPinResult result = new VerifyPinResult();
-                result.setSuccess(false);
-                return result;
+            if (checkPin(pin)) {
+                return new VerifyPinResult(false,-1);
             }
-            for (char c : pin.toCharArray()) {
-                if (!Character.isDigit(c)) {
-                    VerifyPinResult result = new VerifyPinResult();
-                    result.setSuccess(false);
-                    return result;
-                }
-            }
+
             String verify = "002000800824" + pin + "FFFFFFFFFF";
             BinaryData command = BinaryData.from(verify);
             ResponseAPDU answer = cardTransfer.rawCommand(new CommandAPDU(command.toByteArray()));
             BinaryData data = BinaryData.of(answer.getBytes());
 
             if (data.equals(BinaryData.from("9000"))) {
-                VerifyPinResult result = new VerifyPinResult();
-                result.setSuccess(true);
-                return result;
+                return new VerifyPinResult(true,-1);
             } else {
                 String str = data.toString();
-                VerifyPinResult result = new VerifyPinResult();
-                result.setSuccess(false);
+                int counter = -1;
                 if(str.startsWith("63c")){
-                    int counter = Integer.parseInt(str.substring(3));
-                    result.setRetryCount(counter);
+                    counter = Integer.parseInt(str.substring(3));
                 }
-                return result;
+                return new VerifyPinResult(false,counter);
             }
 
         } catch (CardException e) {
             e.printStackTrace();
-            VerifyPinResult result = new VerifyPinResult();
-            result.setSuccess(false);
-            return result;
+            return new VerifyPinResult(false,-1);
         }
+    }
+
+    private boolean checkPin(String pin){
+        if (pin.length() != 4) {
+            return false;
+        }
+        for (char c : pin.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private RecordDto readRecord(CardTransfer cardTransfer, Afl[] afl) throws CardException {

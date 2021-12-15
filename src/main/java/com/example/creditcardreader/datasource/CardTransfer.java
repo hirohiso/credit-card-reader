@@ -10,6 +10,16 @@ public class CardTransfer implements AutoCloseable {
         this.cardChannel = card.getBasicChannel();
     }
 
+    public static CardTransfer getInstance() throws CardException {
+        TerminalFactory tf = TerminalFactory.getDefault();
+        CardTerminals ct = tf.terminals();
+        CardTerminal terminal = ct.list().get(0);
+        Card card = null;
+        card = terminal.connect("*");
+        CardChannel channel = card.getBasicChannel();
+       return new CardTransfer(card);
+    }
+
     public void selectFile() throws CardException {
         BinaryData cla = BinaryData.from("00");
         BinaryData ins = BinaryData.from("A4");

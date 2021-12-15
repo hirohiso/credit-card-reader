@@ -4,6 +4,11 @@ public class VerifyPinResult {
     private boolean success = true;
     private int retryCount = -1;
 
+    public VerifyPinResult(boolean success,int count){
+        this.success = success;
+        this.retryCount = count;
+    }
+
     public boolean isSuccess() {
         return success;
     }
