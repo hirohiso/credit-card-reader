@@ -39,7 +39,6 @@ public class HelloController {
     public void onVerifyPin() {
         System.out.println("verify called");
         String str = this.pinText.getText();
-        System.out.println(str);
         VerifyPinService service = new VerifyPinService();
         VerifyPinResult result = service.verifyPin(str);
         if(result.isSuccess()){
