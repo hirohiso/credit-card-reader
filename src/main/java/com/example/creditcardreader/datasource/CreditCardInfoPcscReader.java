@@ -75,7 +75,7 @@ public class CreditCardInfoPcscReader {
     private RecordDto readRecord(CardTransfer cardTransfer, Afl[] afl) throws CardException {
         List<Tlv> list = new LinkedList<>();
         for (int i = 0; i < afl.length; i++) {
-            int fi = afl[i].getFileIngicate();
+            int fi = afl[i].getFileIndicate();
             String temp = String.format("%02x", fi);
             int start = afl[i].getRecordStart();
             int end = afl[i].getRecordEnd();
