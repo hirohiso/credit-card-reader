@@ -13,9 +13,6 @@ import javafx.scene.control.TextField;
 
 public class HelloController {
     @FXML
-    private Label welcomeText;
-
-    @FXML
     private TextField panText;
     @FXML
     private TextField expiredDateText;
