@@ -143,7 +143,11 @@ public class CreditCardInfoPcscReader {
                 (byte) 0x00
         };
 
-        ResponseAPDU answer = transfer.rawCommand(new CommandAPDU(visa));
+        String select = "00A40400";
+        String length = "07";
+        String visaAid = "A000000003101000";
+        BinaryData command = BinaryData.from(select + length + visaAid);
+        ResponseAPDU answer = transfer.rawCommand(new CommandAPDU(command.toByteArray()));
         byte[] data = answer.getData();
         return new FciAnalyzer().analyze(data);
     }
