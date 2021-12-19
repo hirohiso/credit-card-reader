@@ -1,6 +1,7 @@
 package com.example.creditcardreader.datasource;
 
 public class RecordDto {
+    private String apLabel;
     private BinaryData pan;
     private BinaryData cardholderName;
     private BinaryData expirationDate;
@@ -27,5 +28,13 @@ public class RecordDto {
 
     public void setExpirationDate(BinaryData expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public String getApLabel() {
+        return apLabel;
+    }
+
+    public void setApLabel(String apLabel) {
+        this.apLabel = apLabel;
     }
 }

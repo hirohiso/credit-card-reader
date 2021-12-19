@@ -19,6 +19,12 @@
          <VBox prefHeight="208.0" prefWidth="370.0">
             <children>
                <Label prefHeight="30.0" prefWidth="130.0" text="カード情報の読み取り" />
+               <HBox prefHeight="39.0" prefWidth="370.0">
+                  <children>
+                     <Label prefHeight="26.0" prefWidth="102.0" text="AP" />
+                     <TextField fx:id="apText" prefHeight="27.0" prefWidth="225.0" />
+                  </children>
+               </HBox>
                <HBox prefHeight="42.0" prefWidth="370.0">
                   <children>
                      <Label prefHeight="17.0" prefWidth="103.0" text="PAN" />
@@ -31,10 +37,10 @@
                      <TextField fx:id="expiredDateText" prefHeight="27.0" prefWidth="225.0" />
                   </children>
                </HBox>
-               <HBox prefHeight="40.0" prefWidth="370.0">
+               <HBox prefHeight="41.0" prefWidth="370.0">
                   <children>
                      <Label prefHeight="17.0" prefWidth="104.0" text="Name" />
-                     <TextField fx:id="nameText"  prefHeight="27.0" prefWidth="229.0" />
+                     <TextField fx:id="nameText" prefHeight="27.0" prefWidth="224.0" />
                   </children>
                </HBox>
             
@@ -47,7 +53,7 @@
             <children>
                <Label prefHeight="31.0" prefWidth="91.0" text="暗唱番号の検証" />
                <PasswordField fx:id="pinText" promptText="****" />
-               <Button onAction="#onVerifyPin" mnemonicParsing="false" prefHeight="27.0" prefWidth="76.0" text="検証" />
+               <Button mnemonicParsing="false" onAction="#onVerifyPin" prefHeight="27.0" prefWidth="76.0" text="検証" />
                <TextArea fx:id="pinResultMsgText" prefHeight="70.0" prefWidth="370.0" />
             </children>
          </VBox>

@@ -10,6 +10,7 @@ public class ReadRecordService {
         RecordDto dto = reader.readCard();
 
         ReadRecordResult result = new ReadRecordResult();
+        result.setAp(dto.getApLabel());
         result.setPan(dto.getPan().toString());
         result.setDate(dto.getExpirationDate().toString());
         result.setName(new String(dto.getCardholderName().toByteArray()));

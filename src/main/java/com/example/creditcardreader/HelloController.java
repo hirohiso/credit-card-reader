@@ -13,6 +13,8 @@ import javafx.scene.control.TextField;
 
 public class HelloController {
     @FXML
+    private  TextField apText;
+    @FXML
     private TextField panText;
     @FXML
     private TextField expiredDateText;
@@ -27,6 +29,7 @@ public class HelloController {
     protected void onReadRecordButtonClick() {
         ReadRecordService service = new ReadRecordService();
         ReadRecordResult result =  service.readRecord();
+        this.apText.setText(result.getAp());
         this.panText.setText(result.getPan());
         this.expiredDateText.setText(result.getDate());
         this.nameText.setText(result.getName());

@@ -18,7 +18,9 @@ public class CreditCardInfoPcscReader {
             Fci fci = selectAid(cardTransfer);
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
-            return readRecord(cardTransfer, afl);
+            RecordDto dto = readRecord(cardTransfer, afl);
+            dto.setApLabel(fci.apLabel());
+            return dto;
 
         } catch (CardException e) {
             e.printStackTrace();
