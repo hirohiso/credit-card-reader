@@ -36,7 +36,7 @@ public class CreditCardInfoPcscReader {
             Tl[] pdol = fci.pdol();
             Afl[] afl = processingOption(cardTransfer, pdol);
             //verify command
-            if (checkPin(pin)) {
+            if (!checkPin(pin)) {
                 return new VerifyPinResult(false,-1);
             }
 
